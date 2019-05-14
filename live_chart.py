@@ -29,7 +29,7 @@ def live_data():
     data_timestamp = data_time.timestamp()
     data_value = r['results'][0]['series'][0]['values'][0][1]
 
-    t_inlocal = data_timestamp*1000
+    t_inlocal = data_timestamp*1000+7200000
 
     data_point = [t_inlocal, data_value]
 
