@@ -2,7 +2,10 @@ import json
 import requests
 import datetime
 import time
+import pytz
 from flask import Flask, render_template, make_response
+
+local_tz = pytz.timezone('Europe/Berlin')
 
 
 app = Flask(__name__)
@@ -21,10 +24,14 @@ def live_data():
     r = requests.get(url, params=params).json()
     t = r['results'][0]['series'][0]['values'][0][0]
 
-    data_timestamp = datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp()
+    
+    data_time = datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=pytz.utc).astimezone(local_tz)
+    data_timestamp = data_time.timestamp()
     data_value = r['results'][0]['series'][0]['values'][0][1]
 
-    data_point = [data_timestamp, data_value]
+    t_inlocal = data_timestamp*1000
+
+    data_point = [t_inlocal, data_value]
 
 
     response = make_response(json.dumps(data_point))
